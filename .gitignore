@@ -1,0 +1,7 @@
+server/ms-marco-MiniLM-L-6-v2/
+venv/
+__pycache__/
+vectorstore/
+*.log
+*.pyc
+.env

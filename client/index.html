@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHAKTI — Industrial AI Assistant</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="alert-strip">⚠ DEMO MODE — NOT CONNECTED TO LIVE SYSTEMS — FOR TRAINING AND EVALUATION PURPOSES ONLY</div>
+
+<div class="topbar">
+  <div class="atom-wrap">
+    <svg class="atom-svg" viewBox="-23 -23 46 46">
+      <circle class="nucleus" cx="0" cy="0" r="4.5"/>
+      <ellipse class="orbit-ring" cx="0" cy="0" rx="19" ry="6.5"/>
+      <g class="e1"><circle class="electron" cx="19" cy="0" r="2.4"/></g>
+      <g style="transform:rotate(60deg);transform-origin:0 0">
+        <ellipse class="orbit-ring" cx="0" cy="0" rx="19" ry="6.5"/>
+        <g class="e2"><circle class="electron" cx="19" cy="0" r="2.4"/></g>
+      </g>
+      <g style="transform:rotate(120deg);transform-origin:0 0">
+        <ellipse class="orbit-ring" cx="0" cy="0" rx="19" ry="6.5"/>
+        <g class="e3"><circle class="electron" cx="19" cy="0" r="2.4"/></g>
+      </g>
+    </svg>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div>
+      <div class="logo-text">SHAKTI</div>
+      <div class="logo-sub">AI PROCEDURE ASSISTANT · INDUSTRIAL SYSTEM</div>
+    </div>
+  </div>
+
+  <div class="topbar-divider"></div>
+
+  <div class="plant-info">
+    SYSTEM: <span>INDUSTRIAL UNIT</span> | MODE: <span>OPERATIONAL</span> | SHIFT: <span>B-SHIFT</span><br>
+    OPERATOR: <span>Technician</span> | TERMINAL: <span>T-04</span>
+  </div>
+
+  <div class="topbar-right">
+    <div class="lang-selector">
+      <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+      <button class="lang-btn" onclick="setLang('hi',this)">HI</button>
+      <button class="lang-btn" onclick="setLang('gu',this)">GU</button>
+    </div>
+
+    <button class="voice-toggle" id="voiceToggle" onclick="toggleVoiceOut()">
+      <span id="voiceIcon">🔇</span><span id="voiceLabel">VOICE OFF</span>
+    </button>
+
+    <div class="status-pill idle" id="statusPill">
+      <div class="status-dot"></div><span id="statusText">IDLE</span>
+    </div>
+
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- LEFT PANEL -->
+  <div class="sidebar">
+    <div class="panel-header"><span class="ph-icon">☰</span> PROCEDURE TRACKER</div>
+
+    <div class="procedure-name" id="procedureName">
+      <div class="pn-label">ACTIVE PROCEDURE</div>
+      No procedure active
+    </div>
+
+    <div class="proc-steps" id="procSteps">
+      <div class="proc-step" style="padding:18px 14px">
+        <span class="ps-label" style="color:var(--text-muted);font-style:italic;font-size:11px;">
+          Procedure steps will appear here when a guided process is initiated.
+        </span>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="progress-bar-wrap">
+        <span class="progress-label">COMPLETION</span>
+        <span class="progress-pct" id="progressPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER CHAT -->
+  <div class="chat-area">
+    <div class="chat-messages" id="chatMessages">
+
+      <div class="sys-msg">SESSION INITIATED — <span id="initTime">--:--</span></div>
+
+      <div class="msg-row ai">
+        <div class="msg-avatar ai">AI</div>
+        <div class="msg-body">
+          <div class="msg-meta">SHAKTI · System Ready</div>
+          <div class="msg-bubble ai">
+            Namaste. I am <strong>SHAKTI</strong>, your AI assistant for industrial procedures and technical documentation.<br><br>
+
+            I can help with maintenance workflows, troubleshooting steps, and structured technical processes.<br><br>
+
+            <strong>To use voice:</strong> Press 🎙 once to start recording, press again to send — or just say <strong>"Shakti"</strong> for hands-free mode. You can also type below.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="speaking-bar" id="speakingBar">
+      <div class="wave-bars">
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+      SHAKTI SPEAKING…
+    </div>
+
+    <div class="vad-bar-wrap" id="vadWrap">
+      <div class="vad-bar" id="vadBar"></div>
+    </div>
+
+    <div class="quick-queries">
+      <span class="qq-label">QUICK QUERIES:</span>
+      <button class="qq-btn" onclick="quickQuery('How to inspect a pressure valve?')">Valve Inspection</button>
+      <button class="qq-btn" onclick="quickQuery('Steps to dismantle a compressor unit?')">Compressor Maintenance</button>
+      <button class="qq-btn" onclick="quickQuery('System not starting, troubleshooting steps?')">Startup Failure</button>
+      <button class="qq-btn" onclick="quickQuery('Isolation procedure before maintenance?')">Isolation Procedure</button>
+    </div>
+
+    <div class="input-bar">
+      <div class="wake-indicator">
+        <div class="wake-dot" id="wakeDot"></div>
+        <span id="wakeLabel">SAY: SHAKTI</span>
+      </div>
+
+      <input type="text" class="text-input" id="textInput"
+        placeholder="Type your query or press 🎙 to speak..."
+        onkeydown="if(event.key==='Enter')sendTyped()">
+
+      <button class="mic-btn" id="micBtn" onclick="toggleMic()">🎙</button>
+      <button class="send-btn" onclick="sendTyped()">SEND</button>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="doc-panel">
+    <div class="panel-header"><span class="ph-icon">📄</span> SUPPORTING DOCUMENTS</div>
+
+    <div class="doc-entries" id="docEntries">
+      <div class="doc-entry">
+        <div class="de-source">SYSTEM</div>
+        <div class="de-title">No Context Retrieved</div>
+        <div class="de-snippet">
+          Document sources from the technical knowledge base will appear here when a query is processed.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

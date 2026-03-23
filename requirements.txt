@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+sentence-transformers
+faiss-cpu
+langchain
+langdetect
+pydantic
+requests
+pypdf
+tqdm
+pdfplumber
+rank-bm25
+faster-whisper
+python-multipart
+argostranslate
+pyttsx3
